@@ -10,7 +10,9 @@ public class SwipeControl : MonoBehaviour {
 	public Slider speed;
 	public AudioSource click;
 	public GameObject muteIcon;
-	public GameObject subdivision;
+	public GameObject subdivisionLabel;
+
+	private Text subdivisionText;
 	private DataManager dataManager;
 	private float initSpeed;
 	private Touch initTouch;
@@ -23,6 +25,7 @@ public class SwipeControl : MonoBehaviour {
 		speed.value = initSpeed = (int)dataManager.Load();
 		speedLabel.text = initSpeed.ToString ();
 		screen.backgroundColor = NewColor (speed.value);
+		subdivisionText = subdivisionLabel.GetComponentInChildren<Text> ();
 	}
 
 	void Update()
@@ -52,15 +55,10 @@ public class SwipeControl : MonoBehaviour {
 					moved = true;
 				}
 			} else if (touch.phase == TouchPhase.Ended) {
-				if (touch.tapCount == 1) {
-					click.mute = !click.mute;
-					muteIcon.SetActive (!muteIcon.activeSelf);					
-				} else if (touch.tapCount == 2) {
-					subdivision.SetActive (!subdivision.activeSelf);
+				if (touch.tapCount == 2) {
+					SubdivideBeats ();
 				}
-				//if (!moved) {
 
-				//}
 				initSpeed = speed.value;
 				dataManager.Save (speed.value);
 			}
@@ -82,5 +80,19 @@ public class SwipeControl : MonoBehaviour {
 			colorValue,
 			colorValue/2,
 			238f);	
+	}
+
+	protected void SubdivideBeats()
+	{
+		int count = Metronome.instance.subdivision;
+		subdivisionText.text = count.ToString ()+"x";
+
+		if (count < 3) {
+			Metronome.instance.subdivision += 1;
+			subdivisionLabel.SetActive (true);
+		} else {
+			Metronome.instance.subdivision = 1;
+			subdivisionLabel.SetActive (false);
+		}
 	}
 }

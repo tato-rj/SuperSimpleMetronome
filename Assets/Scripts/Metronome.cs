@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class Metronome : MonoBehaviour {
 
+	public static Metronome instance;
+
 	public Camera screen;
 	public GameObject input;
 	public GameObject slider;
@@ -17,6 +19,12 @@ public class Metronome : MonoBehaviour {
 
 	void Awake()
 	{
+		if (instance != null && instance != this) {
+			Destroy (this.gameObject);
+		} else {
+			instance = this;
+		}
+
 		metronomeOn = false;
 		pulse = input.GetComponent<Animation> ();
 		click = GetComponent<AudioSource> ();
